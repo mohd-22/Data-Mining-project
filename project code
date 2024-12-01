@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+
+
+train_df = pd.read_csv("train.csv")
+test_df = pd.read_csv("test.csv")
+
+X_train = train_data.drop(columns=['id', 'Response'])  # Drop 'id' and target 'price_range'
+y_train = train_data['Response']
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+
+
+model = DecisionTreeClassifier(
+    criterion='gini',       
+    max_depth=50,             
+    min_samples_split=100,     
+    min_samples_leaf=100,    
+    random_state=42
+)
+model.fit(X_train_scaled, y_train)
+
+X_test = test_df.drop(columns=['id'])  
+X_test_scaled = scaler.transform(X_test)
+
+y_pred = model.predict(X_test_scaled)
+
+submission_df = pd.DataFrame({
+    'id': test_df['id'],
+    'Response': y_pred
+})
+
+submission_df.to_csv('dt.csv', index=False)
+
+print("Submission file saved as 'submission.csv'")
